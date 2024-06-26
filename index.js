@@ -2,5 +2,13 @@
 import { Server } from "./server.js";
 import { createChronosPath } from "./generate-config.js";
 
-createChronosPath();
-new Server().start();
+async function initializeAndStartServer() {
+  try {
+    await createChronosPath();
+    new Server().start();
+  } catch (error) {
+    console.error("Failed to initialize the server:", error);
+  }
+}
+
+initializeAndStartServer();

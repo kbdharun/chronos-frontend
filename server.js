@@ -6,7 +6,7 @@ import { dirname, resolve } from 'path';
 import Fastify from 'fastify';
 import RateLimit from '@fastify/rate-limit';
 import Helmet from '@fastify/helmet';
-import Cors from '@fastify/cors'
+import Cors from '@fastify/cors';
 import Static from '@fastify/static';
 
 /**
@@ -20,13 +20,13 @@ import Static from '@fastify/static';
  * new Server().start();
  */
 export class Server {
-  app
-  port
-  __filename
-  __dirname
+  app;
+  port;
+  __filename;
+  __dirname;
 
   constructor() {
-    this.app = Fastify()
+    this.app = Fastify();
     this.port = process.env.PORT || 6090;
     this.__filename = fileURLToPath(import.meta.url);
     this.__dirname = dirname(this.__filename);
@@ -35,32 +35,29 @@ export class Server {
   #middlewares() {
     return Promise.all([
       this.app.register(RateLimit, {
-        max: 100
+        max: 100,
       }),
       this.app.register(Cors),
       this.app.register(Helmet, {
         global: true,
         referrerPolicy: {
-          policy: 'no-referrer'
-        }
+          policy: 'no-referrer',
+        },
       }),
       this.app.register(Static, {
-        root: resolve(this.__dirname, 'dist')
-      })
-    ])
+        root: resolve(this.__dirname, 'dist'),
+      }),
+    ]);
   }
 
   async start() {
     try {
-      await this.#middlewares()
+      await this.#middlewares();
 
-      this.app.listen({ port: this.port }, (err, address) => {
-        if (err) return Promise.reject(err)
-
-        console.log(`Server is running on ${address}`)
-      })
-    } catch(err) {
-      return console.error(err)
+      await this.app.listen({ port: this.port });
+      console.log(`Server is running on http://localhost:${this.port}`);
+    } catch (err) {
+      console.error(err);
     }
   }
 }
